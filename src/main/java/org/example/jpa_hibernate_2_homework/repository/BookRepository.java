@@ -1,6 +1,4 @@
 package org.example.jpa_hibernate_2_homework.repository;
-
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -27,17 +25,17 @@ public class BookRepository {
         return book;
     }
     public List<?> readAllBooks() {
-        return entityManager.createQuery("select b from Book b").getResultList();
+        String query = "select b from Book b";
+        return entityManager.createQuery(query).getResultList();
     }
 
     public Book readBookById(UUID id) {
-        Book book = entityManager.find(Book.class, id);
-        System.out.println(book.toString());
-        return book;
+        return  entityManager.find(Book.class, id);
     }
 
     public List<Book> readBookByTitle(String title) {
-        return entityManager.createQuery("select b from Book b where b.title like :title", Book.class)
+        String query = "select b from Book b where b.title like :title";
+        return entityManager.createQuery(query, Book.class)
                 .setParameter("title", "%" + title + "%")
                 .getResultList();
     }
@@ -46,17 +44,18 @@ public class BookRepository {
     public Book updateBookById(@PathVariable UUID id, BookRequest bookRequest) {
         Book book = entityManager.find(Book.class, id);
         entityManager.detach(book);
-        System.out.println(book.toString());
         modelMapper.map(bookRequest, book);
         entityManager.merge(book);
         return book;
     }
 
-    public Book deleteBookById(UUID id) {
+    public Boolean deleteBookById(UUID id) {
         Book book = entityManager.find(Book.class, id);
-        entityManager.remove(book);
-        System.out.println("Book deleted: " + book.toString());
-        return book;
+        if(book!=null){
+            entityManager.remove(book);
+            return true;
+        }
+        return false;
     }
 }
 

@@ -45,7 +45,7 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<?> readBookById(@PathVariable UUID id) {
         ApiResponse<?> response = ApiResponse.builder()
-                .message("Read all books successfully")
+                .message("Read book successfully")
                 .payload(bookRepository.readBookById(id))
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
@@ -57,7 +57,7 @@ public class BookController {
     @GetMapping("/title")
     public ResponseEntity<?> readBookByTitle(@RequestParam String title) {
         ApiResponse<?> response = ApiResponse.builder()
-                .message("Read book by id successfully")
+                .message("Read books by title successfully")
                 .payload(bookRepository.readBookByTitle(title))
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
