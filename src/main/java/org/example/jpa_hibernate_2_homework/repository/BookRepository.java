@@ -1,4 +1,5 @@
 package org.example.jpa_hibernate_2_homework.repository;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -8,7 +9,9 @@ import org.example.jpa_hibernate_2_homework.model.request.BookRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -24,20 +27,26 @@ public class BookRepository {
         entityManager.persist(book);
         return book;
     }
+
     public List<?> readAllBooks() {
         String query = "select b from Book b";
-        return entityManager.createQuery(query).getResultList();
+        List<Book> books = entityManager.createQuery(query, Book.class).getResultList();
+        if (books.isEmpty()) {
+            return null;
+        }
+        return books;
     }
 
-    public Book readBookById(UUID id) {
-        return  entityManager.find(Book.class, id);
+    public Optional<Book> readBookById(UUID id) {
+        return Optional.ofNullable(entityManager.find(Book.class, id));
     }
 
-    public List<Book> readBookByTitle(String title) {
-        String query = "select b from Book b where b.title like :title";
-        return entityManager.createQuery(query, Book.class)
+    public Optional<List<Book>> readBookByTitle(String title) {
+        String query = "select b from Book b where b.title like lower(:title) ";
+        List<Book> books = entityManager.createQuery(query, Book.class)
                 .setParameter("title", "%" + title + "%")
                 .getResultList();
+        return Optional.ofNullable(books);
     }
 
 
@@ -51,7 +60,7 @@ public class BookRepository {
 
     public Boolean deleteBookById(UUID id) {
         Book book = entityManager.find(Book.class, id);
-        if(book!=null){
+        if (book!=null) {
             entityManager.remove(book);
             return true;
         }
